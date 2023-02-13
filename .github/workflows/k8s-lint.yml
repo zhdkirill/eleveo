@@ -18,5 +18,4 @@ jobs:
         uses: Azure/k8s-lint@v2.0
         with:
           manifests: |
-            manifests/deployment.yaml
-            manifests/service.yaml
+            manifests.yaml
