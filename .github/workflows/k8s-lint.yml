@@ -1,0 +1,22 @@
+name: k8s-lint
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  k8s-lint:
+    name: kubernetes-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v3
+
+      - name: 'kubeval'
+        uses: Azure/k8s-lint@v2.0
+        with:
+          manifests: |
+            manifests/deployment.yaml
+            manifests/service.yaml
