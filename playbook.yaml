@@ -1,0 +1,8 @@
+---
+- name: Install k3s
+  hosts: localhost
+  gather_facts: true
+  roles:
+  - upgrade
+  - k3s
+  - app 

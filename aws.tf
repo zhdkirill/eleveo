@@ -112,12 +112,12 @@ resource "aws_instance" "eleveo" {
     Name = "eleveo-instance"
   }
 
-  provisioner "local-exec" {
-    command = "ansible-playbook k3s.yaml -i '${self.public_ip},' -u ${local.user} --private-key ${local_sensitive_file.ssh_private_key.filename}"
-    environment = {
-      ANSIBLE_HOST_KEY_CHECKING = false
-    }
-  }
+#  provisioner "local-exec" {
+#    command = "ansible-playbook k3s.yaml -i '${self.public_ip},' -u ${local.user} --private-key ${local_sensitive_file.ssh_private_key.filename}"
+#    environment = {
+#      ANSIBLE_HOST_KEY_CHECKING = false
+#    }
+#  }
 }
 
 resource "local_sensitive_file" "ssh_private_key" {
