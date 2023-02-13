@@ -1,0 +1,10 @@
+- name: Deploy app
+  become: true
+  block:
+  - name: Apply manifests
+    shell: /usr/local/bin/kubectl apply -f {{ role_path }}/files/manifests.yaml
+    register: result
+  always:
+  - name: Print k8s output
+    debug:
+      var: result.stdout_lines

@@ -1,0 +1,11 @@
+- name: Upgrade packages
+  become: true
+  block:
+  - name: Update package list
+    yum:
+      update_cache: yes
+  - name: Upgrade packages
+    become: true
+    yum:
+      name: "*"
+      state: latest
