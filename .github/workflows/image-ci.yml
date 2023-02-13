@@ -13,7 +13,6 @@ env:
 jobs:
   python-lint:
     runs-on: ubuntu-latest
-    name: lint
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
@@ -27,7 +26,6 @@ jobs:
           path: "app"
   dockerfile-lint:
     runs-on: ubuntu-latest
-    name: lint
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
@@ -36,6 +34,7 @@ jobs:
         with:
           dockerfile: "app/Dockerfile"
   build:
+    name: build-and-publish
     needs:
       - python-lint
       - dockerfile-lint
@@ -68,7 +67,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: "app"
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
