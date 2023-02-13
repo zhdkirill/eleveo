@@ -1,2 +1,4 @@
 .ssh
-.terraform
+.terraform*
+*.tfstate*
+.aws
