@@ -6,9 +6,9 @@ ___
 Let's say I have a web app. A simple counter app written in Python and Flask. How to distribute it?
 Container image!
 
-Okay, that's easy: write a [Dockerfile](https://github.com/zhdkirill/eleveo/blob/main/app/Dockerfile), build it with `docker build` and that's it!
+Okay, that's easy: write a [Dockerfile](app/Dockerfile), build it with `docker build` and that's it!
 
-Let's publish it now: Github actions can build and publish for me and everyone in the world with a [workflow](https://github.com/zhdkirill/eleveo/blob/main/.github/workflows/image-ci.yml). The resulting image is avaiable on Github container registry.
+Let's publish it now: Github actions can build and publish for me and everyone in the world with a [workflow](.github/workflows/image-ci.yml). The resulting image is avaiable on Github container registry.
 
 You can try running this image with 
 ```
@@ -19,13 +19,13 @@ ___
 Now the application is ready for distribution, so I can run it on a kubernetes cluster!
 
 The application is stateless by my design, so all I need is a Deployment resource to control my pods and a Service resource to provide network access.
-I packed both resource manifests into a [single file](https://github.com/zhdkirill/eleveo/blob/main/roles/app/files/manifests.yaml).
+I packed both resource manifests into a [single file](roles/app/files/manifests.yaml).
 
 You can try applying those manifests on your kubernetes cluster with a single command:
 ```
 kubectl apply -f roles/app/files/manifests.yaml
 ```
-<div style="text-align: right"><i> Sorry for the long path, I'll need that later</i></div>
+*Sorry for the long path, I'll need that later* :wink:
 
 ___
 ## Level 3. Ansible
@@ -34,11 +34,11 @@ What if I don't have a kubernetes cluster? Let's deploy it!
 There is an amazing [k3s](https://k3s.io) project that allows creating a kubernetes cluster on a single node.
 I'm using [ansible](https://www.ansible.com) to provision the node and apply my manifest on the cluster.
 
-My entrypoint is a [playbook](https://github.com/zhdkirill/eleveo/blob/main/playbook.yaml) with [roles](https://github.com/zhdkirill/eleveo/tree/main/roles) defined for the node. The roles make the logic code modular and more readable. There are 3 roles configured:
+My entrypoint is a [playbook](playbook.yaml) with [roles](roles) defined for the node. The roles make the logic code modular and more readable. There are 3 roles configured:
 
-- [upgrade](https://github.com/zhdkirill/eleveo/blob/main/roles/upgrade/tasks/main.yml) - upgrades host packages
-- [k3s](https://github.com/zhdkirill/eleveo/blob/main/roles/k3s/tasks/main.yml) - installs k3s
-- [app](https://github.com/zhdkirill/eleveo/blob/main/roles/app/tasks/main.yml) - deploys the app on k3s
+- [upgrade](upgrade/tasks/main.yml) - upgrades host packages
+- [k3s](k3s/tasks/main.yml) - installs k3s
+- [app](app/tasks/main.yml) - deploys the app on k3s
 
 You can deploy it on a server with a single command:
 ```
@@ -51,7 +51,7 @@ Okay, but where do I get a server? AWS!
 [Terraform](https://www.terraform.io) allows ~~*changing planets*~~ creating and managing complex cloud infrastructure with code, but I only need an instance. I will also set up networking for the instance and generate an SSH key to access it (just in case).
 With [cloud-init](https://cloudinit.readthedocs.io/en/latest/) I can run my ansible playbook during the instance initialization phase, so I'll get my application deployed on k3s installed on the instance right away!
 
-My terraform code is in [aws.tf](https://github.com/zhdkirill/eleveo/blob/main/aws.tf) file and the infrastructure it describes can be created with a few commands:
+My terraform code is in [aws.tf](aws.tf) file and the infrastructure it describes can be created with a few commands:
 ```
 terraform init      # init the directory, fetch plugins
 terraform plan      # review the changes
@@ -68,7 +68,7 @@ How can I make sure that the code in this repository works? Even if I change it?
 A deployment pipeline!
 
 Github actions allow me to deploy a version of my code on AWS and verify it works.
-[My pipeline](https://github.com/zhdkirill/eleveo/blob/main/.github/workflows/deployment.yml) follows strict logic:
+[My pipeline](.github/workflows/deployment.yml) follows strict logic:
 
 1. Initialize terraform module
 2. Verify terraform code
