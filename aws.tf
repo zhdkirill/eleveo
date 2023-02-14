@@ -1,5 +1,5 @@
 locals {
-  image       = "ami-0d1ddd83282187d18"  # Ubuntu Server 22.04
+  image       = "ami-0d1ddd83282187d18" # Ubuntu Server 22.04
   flavor      = "t2.micro"
   volume_size = 8
   volume_type = "gp3"
@@ -115,7 +115,7 @@ resource "aws_instance" "eleveo" {
   key_name                    = aws_key_pair.eleveo.key_name
   user_data                   = data.cloudinit_config.ansible.rendered
   associate_public_ip_address = true
-  
+
   root_block_device {
     volume_size           = local.volume_size
     volume_type           = local.volume_type
