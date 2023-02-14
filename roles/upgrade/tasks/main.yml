@@ -2,10 +2,8 @@
   become: true
   block:
   - name: Update package list
-    yum:
-      update_cache: yes
+    apt:
+      update_cache: true
   - name: Upgrade packages
-    become: true
-    yum:
-      name: "*"
-      state: latest
+    apt:
+      upgrade: "yes"
