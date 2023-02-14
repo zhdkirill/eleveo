@@ -37,7 +37,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: 'Get instance IP address'
-        run: echo "INSTANCE_IP=$(terraform-bin output instance_ip)" >> $GITHUB_ENV
+        run: echo "INSTANCE_IP=$(terraform-bin output -raw instance_ip)" >> $GITHUB_ENV
 
       - name: 'Test'
         uses: jtalk/url-health-check-action@v3
