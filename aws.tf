@@ -1,7 +1,8 @@
 locals {
-  image = "ami-06c39ed6b42908a36"  # Amazon Linux 2 AMI (HVM) - Kernel 5.10
+#  image = "ami-06c39ed6b42908a36"  # Amazon Linux 2 AMI (HVM) - Kernel 5.10
+  image = "ami-0d1ddd83282187d18"  # Ubuntu Server 22.04
   flavor = "t2.micro"
-  user = "ec2-user"
+  user = "ubuntu"
 #  ssh_private_key = file("../.ssh/id_ed25519")
 #  ssh_public_key = file("../.ssh/id_ed25519.pub")
 }
@@ -94,12 +95,26 @@ resource "aws_key_pair" "eleveo" {
   public_key = tls_private_key.ssh.public_key_openssh
 }
 
+data "local_file" "cloud-init" {
+  filename = "./cloud-init.yaml"
+}
+
+data "cloudinit_config" "ansible" {
+  gzip = false
+  base64_encode = false
+  part {
+    content_type = "text/cloud-config"
+    content = data.local_file.cloud-init.content
+  }
+}
+
 resource "aws_instance" "eleveo" {
   ami           = local.image
   instance_type = local.flavor
   vpc_security_group_ids = [aws_security_group.eleveo.id]
   subnet_id            = aws_subnet.eleveo.id
   key_name             = aws_key_pair.eleveo.key_name
+  user_data            = data.cloudinit_config.ansible.rendered
   associate_public_ip_address = true
   
   root_block_device {
@@ -126,15 +141,15 @@ resource "local_sensitive_file" "ssh_private_key" {
   file_permission = 0600
 }
 
-resource "local_file" "inventory" {
-  content = templatefile("inventory.tmpl",
-    {
-      server_address = aws_instance.eleveo.public_ip,
-      key_file_path = local_sensitive_file.ssh_private_key.filename
-    }
-  )
-  filename = "inventory.ini"
-}
+# resource "local_file" "inventory" {
+#   content = templatefile("inventory.tmpl",
+#     {
+#       server_address = aws_instance.eleveo.public_ip,
+#       key_file_path = local_sensitive_file.ssh_private_key.filename
+#     }
+#   )
+#   filename = "inventory.ini"
+# }
 
 output "instance_ip" {
   value = aws_instance.eleveo.public_ip

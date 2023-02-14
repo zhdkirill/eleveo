@@ -1,0 +1,8 @@
+#cloud-config
+#
+ansible:
+  install_method: distro
+  pull:
+    url: "https://github.com/zhdkirill/eleveo.git"
+    playbook_name: playbook.yaml
+    checkout: roles
