@@ -28,7 +28,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: echo ${{ steps.plan.outputs.stderr }}
 
       - name: 'Deploy'
         id: deploy
@@ -36,16 +35,11 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - run: echo ${{ steps.deploy.outputs.stdout }}
-      - run: echo ${{ steps.deploy.outputs.stderr }}
-
-      - name: 'Get IP'
-        run: instance_ip=$(terraform output instance_ip)
 
       - name: 'Test'
         uses: jtalk/url-health-check-action@v3
         with:
-          url: http://${instance_ip}}:8080/
+          url: http://${{ steps.deploy.outputs.instance_ip }}:8080/
           max-attempts: 30
           retry-delay: 10s
 
