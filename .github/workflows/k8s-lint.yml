@@ -2,9 +2,8 @@ name: k8s-lint
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    paths:
+      - "roles/app/files/**"
 
 jobs:
   k8s-lint:
