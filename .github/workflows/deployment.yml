@@ -21,6 +21,10 @@ jobs:
       
       - name: 'Init terraform'
         run: terraform init
+
+      - name: 'Validate terraform'
+        id: validate
+        run: terraform validate -no-color
       
       - name: 'Plan terraform'
         id: plan
@@ -29,7 +33,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: 'Deploy'
+      - name: 'Deploy env'
         id: deploy
         run: terraform apply -auto-approve -no-color
         env:
@@ -39,7 +43,7 @@ jobs:
       - name: 'Get instance IP address'
         run: echo "INSTANCE_IP=$(terraform-bin output -raw instance_ip)" >> $GITHUB_ENV
 
-      - name: 'Test'
+      - name: 'Test deployment'
         uses: jtalk/url-health-check-action@v3
         with:
           url: http://${{env.INSTANCE_IP}}:8080/
