@@ -2,6 +2,7 @@
 #
 ansible:
   install_method: distro
+  package_name: ansible
   pull:
     url: "https://github.com/zhdkirill/eleveo.git"
     playbook_name: playbook.yaml
