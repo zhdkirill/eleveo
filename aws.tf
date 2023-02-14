@@ -1,10 +1,9 @@
 locals {
-#  image = "ami-06c39ed6b42908a36"  # Amazon Linux 2 AMI (HVM) - Kernel 5.10
-  image = "ami-0d1ddd83282187d18"  # Ubuntu Server 22.04
-  flavor = "t2.micro"
-  user = "ubuntu"
-#  ssh_private_key = file("../.ssh/id_ed25519")
-#  ssh_public_key = file("../.ssh/id_ed25519.pub")
+  image       = "ami-0d1ddd83282187d18"  # Ubuntu Server 22.04
+  flavor      = "t2.micro"
+  volume_size = 8
+  volume_type = "gp3"
+  user        = "ubuntu"
 }
 
 provider "aws" {
@@ -50,7 +49,7 @@ resource "aws_route_table" "internet" {
 }
 
 resource "aws_route_table_association" "internet" {
-  subnet_id = aws_subnet.eleveo.id
+  subnet_id      = aws_subnet.eleveo.id
   route_table_id = aws_route_table.internet.id
 }
 
@@ -58,27 +57,27 @@ resource "aws_route_table_association" "internet" {
 resource "aws_security_group" "eleveo" {
   name        = "eleveo-security-group"
   description = "Allow SSH and HTTP traffic"
-  vpc_id = aws_vpc.eleveo.id
+  vpc_id      = aws_vpc.eleveo.id
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 8080
-    to_port   = 8080
-    protocol  = "tcp"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -100,56 +99,39 @@ data "local_file" "cloud-init" {
 }
 
 data "cloudinit_config" "ansible" {
-  gzip = false
+  gzip          = false
   base64_encode = false
   part {
     content_type = "text/cloud-config"
-    content = data.local_file.cloud-init.content
+    content      = data.local_file.cloud-init.content
   }
 }
 
 resource "aws_instance" "eleveo" {
-  ami           = local.image
-  instance_type = local.flavor
-  vpc_security_group_ids = [aws_security_group.eleveo.id]
-  subnet_id            = aws_subnet.eleveo.id
-  key_name             = aws_key_pair.eleveo.key_name
-  user_data            = data.cloudinit_config.ansible.rendered
+  ami                         = local.image
+  instance_type               = local.flavor
+  vpc_security_group_ids      = [aws_security_group.eleveo.id]
+  subnet_id                   = aws_subnet.eleveo.id
+  key_name                    = aws_key_pair.eleveo.key_name
+  user_data                   = data.cloudinit_config.ansible.rendered
   associate_public_ip_address = true
   
   root_block_device {
-    volume_size = 10
-    volume_type = "gp3"
+    volume_size           = local.volume_size
+    volume_type           = local.volume_type
     delete_on_termination = true
   }
 
   tags = {
     Name = "eleveo-instance"
   }
-
-#  provisioner "local-exec" {
-#    command = "ansible-playbook k3s.yaml -i '${self.public_ip},' -u ${local.user} --private-key ${local_sensitive_file.ssh_private_key.filename}"
-#    environment = {
-#      ANSIBLE_HOST_KEY_CHECKING = false
-#    }
-#  }
 }
 
 resource "local_sensitive_file" "ssh_private_key" {
-  filename = "${path.module}/.ssh/id_generated"
-  content = tls_private_key.ssh.private_key_openssh
+  filename        = "${path.module}/.ssh/id_generated"
+  content         = tls_private_key.ssh.private_key_openssh
   file_permission = 0600
 }
-
-# resource "local_file" "inventory" {
-#   content = templatefile("inventory.tmpl",
-#     {
-#       server_address = aws_instance.eleveo.public_ip,
-#       key_file_path = local_sensitive_file.ssh_private_key.filename
-#     }
-#   )
-#   filename = "inventory.ini"
-# }
 
 output "instance_ip" {
   value = aws_instance.eleveo.public_ip
