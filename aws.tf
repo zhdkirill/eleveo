@@ -3,6 +3,7 @@ locals {
   flavor      = "t2.micro"
   volume_size = 8
   volume_type = "gp3"
+  cloud-init  = "./cloud-init.yaml"
 }
 
 resource "random_uuid" "deployment_id" {}
@@ -104,7 +105,7 @@ resource "aws_key_pair" "eleveo" {
 }
 
 data "local_file" "cloud-init" {
-  filename = "./cloud-init.yaml"
+  filename = local.cloud-init
 }
 
 data "cloudinit_config" "ansible" {
