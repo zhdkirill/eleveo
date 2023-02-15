@@ -3,7 +3,7 @@ This is an exercise project on managing an infrastructure as a code.
 
 ___
 ## Level 1. Docker
-Let's say I have a web app. A simple counter app written in Python and Flask. How to distribute it?
+Let's say I have a [web app](app/app.py). A simple counter app written in Python and Flask. How to distribute it?
 Container image!
 
 Okay, that's easy: write a [Dockerfile](app/Dockerfile), build it with `docker build` and that's it!
