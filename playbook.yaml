@@ -1,5 +1,5 @@
 ---
-- name: Install k3s
+- name: Provision k3s server
   hosts: localhost
   gather_facts: true
   roles:
