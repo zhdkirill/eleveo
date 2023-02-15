@@ -3,8 +3,9 @@ locals {
   flavor      = "t2.micro"
   volume_size = 8
   volume_type = "gp3"
-  user        = "ubuntu"
 }
+
+resource "random_uuid" "deployment_id" {}
 
 provider "aws" {
   region = "eu-central-1"
@@ -15,6 +16,7 @@ resource "aws_vpc" "eleveo" {
 
   tags = {
     Name = "eleveo-vpc"
+    Deployment = random_uuid.deployment_id.result
   }
 }
 
@@ -24,6 +26,7 @@ resource "aws_subnet" "eleveo" {
 
   tags = {
     Name = "eleveo-subnet"
+    Deployment = random_uuid.deployment_id.result
   }
 }
 
@@ -32,6 +35,7 @@ resource "aws_internet_gateway" "eleveo" {
 
   tags = {
     Name = "eleveo-internet-gateway"
+    Deployment = random_uuid.deployment_id.result
   }
 }
 
@@ -44,7 +48,8 @@ resource "aws_route_table" "internet" {
   }
 
   tags = {
-    "Name" = "internet-route-table"
+    Name = "internet-route-table"
+    Deployment = random_uuid.deployment_id.result
   }
 }
 
@@ -55,7 +60,6 @@ resource "aws_route_table_association" "internet" {
 
 
 resource "aws_security_group" "eleveo" {
-  name        = "eleveo-security-group"
   description = "Allow SSH and HTTP traffic"
   vpc_id      = aws_vpc.eleveo.id
 
@@ -82,6 +86,7 @@ resource "aws_security_group" "eleveo" {
 
   tags = {
     Name = "eleveo-security-group"
+    Deployment = random_uuid.deployment_id.result
   }
 }
 
@@ -90,8 +95,12 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "aws_key_pair" "eleveo" {
-  key_name   = "eleveo-key-pair"
   public_key = tls_private_key.ssh.public_key_openssh
+
+  tags = {
+    Name = "eleveo-key-pair"
+    Deployment = random_uuid.deployment_id.result
+  }
 }
 
 data "local_file" "cloud-init" {
@@ -124,6 +133,7 @@ resource "aws_instance" "eleveo" {
 
   tags = {
     Name = "eleveo-instance"
+    Deployment = random_uuid.deployment_id.result
   }
 }
 
