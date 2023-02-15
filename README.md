@@ -26,7 +26,6 @@ You can try applying those manifests on your kubernetes cluster with a single co
 kubectl apply -f roles/app/files/manifests.yaml
 ```
 *Sorry for the long path, I'll need that later* :wink:
-
 ___
 ## Level 3. Ansible
 What if I don't have a kubernetes cluster? Let's deploy it!
@@ -44,6 +43,8 @@ You can deploy it on a server with a single command:
 ```
 ansible-playbook playbook.yaml
 ```
+The app would be available publicly on server port 8080.
+
 **Note**: the play expects Ubuntu/Debian Linux distro
 ___
 ## Level 4. Terraform
