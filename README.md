@@ -10,7 +10,7 @@ Okay, that's easy: write a [Dockerfile](app/Dockerfile), build it with `docker b
 
 Let's publish it now: Github actions can build and publish for me and everyone in the world with a [workflow](.github/workflows/image-ci.yml). The resulting image is avaiable on Github container registry.
 
-You can try running this image with 
+You can try running this image with:
 ```
 docker run -d ghcr.io/zhdkirill/eleveo:main
 ```
@@ -44,6 +44,7 @@ You can deploy it on a server with a single command:
 ```
 ansible-playbook playbook.yaml
 ```
+**Note**: the play expects Ubuntu/Debian Linux distro
 ___
 ## Level 4. Terraform
 Okay, but where do I get a server? AWS!
