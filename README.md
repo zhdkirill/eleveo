@@ -36,9 +36,9 @@ I'm using [ansible](https://www.ansible.com) to provision the node and apply my 
 
 My entrypoint is a [playbook](playbook.yaml) with [roles](roles) defined for the node. The roles make the logic code modular and more readable. There are 3 roles configured:
 
-- [upgrade](upgrade/tasks/main.yml) - upgrades host packages
-- [k3s](k3s/tasks/main.yml) - installs k3s
-- [app](app/tasks/main.yml) - deploys the app on k3s
+- [upgrade](roles/upgrade/tasks/main.yml) - upgrades host packages
+- [k3s](roles/k3s/tasks/main.yml) - installs k3s
+- [app](roles/app/tasks/main.yml) - deploys the app on k3s
 
 You can deploy it on a server with a single command:
 ```
@@ -50,7 +50,7 @@ ___
 Okay, but where do I get a server? AWS!
 
 [Terraform](https://www.terraform.io) allows ~~*changing planets*~~ creating and managing complex cloud infrastructure with code, but I only need an instance. I will also set up networking for the instance and generate an SSH key to access it (just in case).
-With [cloud-init](https://cloudinit.readthedocs.io/en/latest/) I can run my ansible playbook during the instance initialization phase, so I'll get my application deployed on k3s installed on the instance right away!
+With [cloud-init](cloud-init.yaml) I can run my ansible playbook during the instance initialization phase, so I'll get my application deployed on k3s installed on the instance right away!
 
 My terraform code is in [aws.tf](aws.tf) file and the infrastructure it describes can be created with a few commands:
 ```
