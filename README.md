@@ -43,7 +43,7 @@ You can deploy it on a server with a single command:
 ```
 ansible-playbook playbook.yaml
 ```
-The app would be available publicly on server port 8080.
+The app would be publicly available on server port 8080.
 
 **Note**: the play expects Ubuntu/Debian Linux distro
 ___
@@ -51,9 +51,12 @@ ___
 Okay, but where do I get a server? AWS!
 
 [Terraform](https://www.terraform.io) allows ~~*changing planets*~~ creating and managing complex cloud infrastructure with code, but I only need an instance. I will also set up networking for the instance and generate an SSH key to access it (just in case).
-With [cloud-init](cloud-init.yaml) I can run my ansible playbook during the instance initialization phase, so I'll get my application deployed on k3s installed on the instance right away!
 
-My terraform code is in [aws.tf](aws.tf) file and the infrastructure it describes can be created with a few commands:
+With [cloud-init](cloud-init.yaml) I can run my ansible playbook during the instance initialization phase.
+It will get my application deployed on k3s, which would be installed on the instance, right away!
+
+My terraform code is in [aws.tf](aws.tf) file.
+It describes the infrastructure that can be created with a few commands:
 ```
 terraform init      # init the directory, fetch plugins
 terraform plan      # review the changes
